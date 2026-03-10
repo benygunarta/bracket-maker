@@ -1,0 +1,2367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Bracket System - Enhanced Visual</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- html2canvas for PDF rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0a0f1e 0%, #1a1f35 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(90deg, #4a90e2 0%, #9b59b6 50%, #e74c3c 100%);
+            padding: 2px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .header-content {
+            background: #0f1424;
+            border-radius: 18px;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo h1 {
+            font-size: 2.5em;
+            font-weight: 800;
+            background: linear-gradient(45deg, #4a90e2, #9b59b6, #e74c3c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+
+        .logo span {
+            font-size: 0.9em;
+            color: #888;
+            font-weight: 300;
+            display: block;
+        }
+
+        .tournament-info {
+            display: flex;
+            gap: 30px;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-label {
+            color: #888;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #4a90e2, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .panel-title {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #4a90e2, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title i {
+            color: #e74c3c;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #9b59b6;
+            box-shadow: 0 0 10px rgba(155,89,182,0.3);
+        }
+
+        .form-control option {
+            background: #1a1f35;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4a90e2, #9b59b6);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(74,144,226,0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #c0392b;
+            color: white;
+        }
+
+        .btn-excel {
+            background: #1d6f42;
+            color: white;
+        }
+
+        .btn-pdf {
+            background: #b22222;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .data-management {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* Participants Section */
+        .participants-section {
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .participants-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .participants-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .participant-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid #9b59b6;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .participant-card:hover {
+            background: rgba(155,89,182,0.1);
+            transform: translateX(5px);
+        }
+
+        .participant-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .participant-name {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .participant-stats {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 3px;
+        }
+
+        .participant-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .edit-participant {
+            color: #4a90e2;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .edit-participant:hover {
+            opacity: 1;
+        }
+
+        .remove-participant {
+            color: #e74c3c;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .remove-participant:hover {
+            opacity: 1;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state i {
+            font-size: 3em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .empty-state p {
+            font-size: 1.1em;
+        }
+
+        .empty-state small {
+            color: #444;
+            display: block;
+            margin-top: 10px;
+        }
+
+        /* Edit Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #1a1f35;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(155,89,182,0.3);
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #4a90e2, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        /* ============== ENHANCED BRACKET STYLES ============== */
+        
+        .bracket-container {
+            background: rgba(255,255,255,0.02);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+        }
+
+        .bracket-wrapper {
+            display: flex;
+            gap: 60px;
+            padding: 30px 0;
+            min-width: min-content;
+            position: relative;
+        }
+
+        /* Round styling */
+        .round {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            position: relative;
+            min-width: 300px;
+        }
+
+        .round:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, #9b59b6, #4a90e2);
+            transform: translateY(-50%);
+            z-index: 5;
+        }
+
+        .round-title {
+            text-align: center;
+            background: linear-gradient(45deg, #4a90e2, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+            padding: 0 20px;
+        }
+
+        .round-title::before,
+        .round-title::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, #4a90e2, #9b59b6);
+        }
+
+        .round-title::before {
+            left: -20px;
+        }
+
+        .round-title::after {
+            right: -20px;
+        }
+
+        /* Match card styling */
+        .match {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+            border-radius: 16px;
+            padding: 18px;
+            min-width: 300px;
+            border: 1px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .match:hover {
+            border-color: #9b59b6;
+            box-shadow: 0 8px 25px rgba(155,89,182,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Connection lines between matches */
+        .match::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, #4a90e2, #9b59b6);
+            opacity: 0.6;
+        }
+
+        .round:first-child .match::before {
+            display: none;
+        }
+
+        /* Vertical connectors */
+        .match::after {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            width: 2px;
+            height: 50px;
+            background: linear-gradient(180deg, #4a90e2, #9b59b6);
+            opacity: 0.4;
+            transform: translateY(-50%);
+            z-index: -1;
+        }
+
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            color: #aaa;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+
+        .match-header span:first-child {
+            background: rgba(74,144,226,0.2);
+            padding: 3px 10px;
+            border-radius: 20px;
+            color: #4a90e2;
+        }
+
+        .match-header span:last-child {
+            background: rgba(155,89,182,0.2);
+            padding: 3px 10px;
+            border-radius: 20px;
+            color: #9b59b6;
+        }
+
+        /* Team row styling */
+        .team-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            position: relative;
+        }
+
+        .team-row:hover {
+            background: rgba(74,144,226,0.2);
+            border-color: #4a90e2;
+        }
+
+        .team-row.winner {
+            background: linear-gradient(90deg, rgba(155,89,182,0.3), rgba(74,144,226,0.3));
+            border-left: 4px solid #f1c40f;
+            position: relative;
+        }
+
+        .team-row.winner::before {
+            content: '👑';
+            position: absolute;
+            left: -5px;
+            top: -5px;
+            font-size: 14px;
+            background: #f1c40f;
+            color: #000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .team-name {
+            font-weight: 600;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .team-name i {
+            color: #f1c40f;
+            font-size: 0.9em;
+        }
+
+        /* Stats badge */
+        .stats-badge {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .team-score {
+            width: 45px;
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #4a90e2;
+            color: white;
+            border-radius: 8px;
+            padding: 5px;
+            margin: 0 3px;
+            font-weight: 600;
+        }
+
+        .team-score:focus {
+            outline: 2px solid #f1c40f;
+            border-color: transparent;
+        }
+
+        .team-kills {
+            width: 50px;
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            border-radius: 8px;
+            padding: 5px;
+            margin: 0 3px;
+            font-weight: 600;
+        }
+
+        .team-duration {
+            width: 65px;
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #f39c12;
+            color: #f39c12;
+            border-radius: 8px;
+            padding: 5px;
+            font-size: 0.85em;
+        }
+
+        /* Match status badges */
+        .match-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-completed {
+            background: #27ae60;
+            color: white;
+        }
+
+        .status-pending {
+            background: #f39c12;
+            color: white;
+        }
+
+        .status-bye {
+            background: #7f8c8d;
+            color: white;
+        }
+
+        /* BYE indicator */
+        .bye-indicator {
+            background: rgba(127,140,141,0.3);
+            padding: 3px 8px;
+            border-radius: 12px;
+            color: #bdc3c7;
+            font-size: 0.8em;
+        }
+
+        /* Swiss System Table Enhanced */
+        .swiss-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.03);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .swiss-table th {
+            background: linear-gradient(90deg, #4a90e2, #9b59b6);
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        .swiss-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .swiss-table tr:hover {
+            background: rgba(155,89,182,0.1);
+        }
+
+        .swiss-table tr.top-three {
+            background: linear-gradient(90deg, rgba(241,196,15,0.1), rgba(155,89,182,0.1));
+            border-left: 3px solid #f1c40f;
+        }
+
+        /* Group Stage Enhanced */
+        .groups-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .group-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .group-title {
+            background: linear-gradient(45deg, #4a90e2, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .group-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #4a90e2, #9b59b6);
+            border-radius: 3px;
+        }
+
+        .group-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .group-table th {
+            background: rgba(155,89,182,0.2);
+            padding: 10px;
+            font-size: 0.85em;
+            color: #aaa;
+            font-weight: 600;
+        }
+
+        .group-table td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .group-table tr.qualified {
+            background: rgba(39,174,96,0.1);
+            border-left: 3px solid #27ae60;
+        }
+
+        /* Medal emblems */
+        .medal {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .medal.gold {
+            background: #f1c40f;
+            color: #000;
+        }
+
+        .medal.silver {
+            background: #bdc3c7;
+            color: #000;
+        }
+
+        .medal.bronze {
+            background: #cd7f32;
+            color: #fff;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1001;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.error {
+            background: #c0392b;
+        }
+
+        .toast.warning {
+            background: #f39c12;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Trophy animation */
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px #f1c40f; }
+            50% { box-shadow: 0 0 20px #f1c40f; }
+            100% { box-shadow: 0 0 5px #f1c40f; }
+        }
+
+        .champion {
+            animation: glow 2s infinite;
+            border: 2px solid #f1c40f !important;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #4a90e2, #9b59b6);
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #9b59b6, #4a90e2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .tournament-info {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .action-buttons {
+                justify-content: center;
+            }
+
+            .bracket-wrapper {
+                gap: 30px;
+            }
+
+            .match {
+                min-width: 250px;
+            }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>TOURNAMENT BRACKET</h1>
+                <span>PROFESSIONAL BRACKET SYSTEM</span>
+            </div>
+            <div class="tournament-info">
+                <div class="info-item">
+                    <div class="info-label">System</div>
+                    <div class="info-value" id="currentSystem">Single Elimination</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Participants</div>
+                    <div class="info-value" id="participantCount">0/30</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Matches</div>
+                    <div class="info-value" id="matchCount">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="control-panel">
+        <div class="panel-title">
+            <i class="fas fa-sliders-h"></i> Tournament Configuration
+        </div>
+        <div class="grid-3">
+            <div class="form-group">
+                <label><i class="fas fa-trophy"></i> Tournament Name</label>
+                <input type="text" class="form-control" id="tournamentName" value="My Tournament" placeholder="Enter tournament name">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-sitemap"></i> Bracket System</label>
+                <select class="form-control" id="bracketSystem" onchange="saveSystemPreference()">
+                    <option value="single">Single Elimination (Gugur Tunggal)</option>
+                    <option value="double">Double Elimination (Gugur Ganda)</option>
+                    <option value="group">Group Stage (Sistem Grup)</option>
+                    <option value="swiss">Swiss System</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-users"></i> Add Participant</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" class="form-control" id="participantName" placeholder="Enter team name" maxlength="30">
+                    <button class="btn btn-secondary" onclick="addParticipant()"><i class="fas fa-plus"></i> Add</button>
+                </div>
+            </div>
+        </div>
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="initializeTournament()"><i class="fas fa-play"></i> Initialize Tournament</button>
+            <button class="btn btn-excel" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export to Excel</button>
+            <button class="btn btn-pdf" onclick="exportToPDF()"><i class="fas fa-file-pdf"></i> Export to PDF</button>
+            <button class="btn btn-secondary" onclick="printBracket()"><i class="fas fa-print"></i> Print</button>
+        </div>
+
+        <!-- Data Management Section -->
+        <div class="data-management">
+            <button class="btn btn-success" onclick="saveData()"><i class="fas fa-save"></i> Save to Browser</button>
+            <button class="btn btn-warning" onclick="loadData()"><i class="fas fa-folder-open"></i> Load from Browser</button>
+            <button class="btn btn-danger" onclick="clearData()"><i class="fas fa-trash"></i> Clear All Data</button>
+            <button class="btn btn-secondary" onclick="exportData()"><i class="fas fa-download"></i> Export Data (JSON)</button>
+            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()"><i class="fas fa-upload"></i> Import Data (JSON)</button>
+            <span style="color: #888; margin-left: auto; font-size: 0.85em;">
+                <i class="fas fa-history"></i> Auto-save enabled
+            </span>
+        </div>
+    </div>
+
+    <div class="participants-section">
+        <div class="participants-header">
+            <div class="panel-title" style="margin-bottom: 0;">
+                <i class="fas fa-users"></i> Participants List (Max 30)
+            </div>
+            <div class="participant-count" style="color: #888;">
+                <span id="participantListCount">0</span> / 30
+            </div>
+        </div>
+        <div class="participants-list" id="participantsList">
+            <!-- Empty state will be shown here when no participants -->
+        </div>
+    </div>
+
+    <div class="bracket-container" id="bracketContainer">
+        <div class="bracket-wrapper" id="bracketWrapper">
+            <!-- Bracket will be rendered here -->
+            <div style="text-align: center; width: 100%; padding: 50px; color: #666;">
+                <i class="fas fa-sitemap" style="font-size: 3em; margin-bottom: 15px;"></i>
+                <p>No tournament initialized yet</p>
+                <small>Add participants and click "Initialize Tournament" to generate bracket</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Score Input Modal -->
+    <div class="modal" id="scoreModal">
+        <div class="modal-content">
+            <div class="modal-title" id="modalTitle">Enter Match Results</div>
+            <div id="modalTeams">
+                <!-- Teams will be inserted here -->
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveMatchScore()">Save Results</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Participant Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-title">Edit Team</div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: #aaa;">Team Name</label>
+                <input type="text" class="form-control" id="editParticipantName" placeholder="Enter team name">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveEditParticipant()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" style="display: none;"></div>
+
+    <script>
+        // Global variables
+        let participants = [];
+        let matches = [];
+        let currentMatchId = null;
+        let currentEditId = null;
+        let tournamentInitialized = false;
+        let bracketSystem = 'single';
+        
+        // ============== LOCAL STORAGE FUNCTIONS ==============
+        
+        // Save all data to localStorage
+        function saveToLocalStorage() {
+            const data = {
+                participants: participants,
+                matches: matches,
+                tournamentInitialized: tournamentInitialized,
+                bracketSystem: bracketSystem,
+                tournamentName: document.getElementById('tournamentName').value,
+                lastUpdated: new Date().toISOString()
+            };
+            
+            localStorage.setItem('tournamentData', JSON.stringify(data));
+            showToast('Data saved to browser', 'success');
+        }
+        
+        // Load data from localStorage
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('tournamentData');
+            if (!savedData) {
+                return false;
+            }
+            
+            try {
+                const data = JSON.parse(savedData);
+                
+                // Restore data
+                participants = data.participants || [];
+                matches = data.matches || [];
+                tournamentInitialized = data.tournamentInitialized || false;
+                bracketSystem = data.bracketSystem || 'single';
+                
+                // Restore form values
+                if (data.tournamentName) {
+                    document.getElementById('tournamentName').value = data.tournamentName;
+                }
+                
+                // Restore system select
+                document.getElementById('bracketSystem').value = bracketSystem;
+                
+                // Update UI
+                updateParticipantsList();
+                renderBracket();
+                updateInfo();
+                
+                return true;
+                
+            } catch (e) {
+                console.error('Error loading data:', e);
+                return false;
+            }
+        }
+        
+        // Clear all data from localStorage
+        function clearLocalStorage() {
+            if (confirm('Are you sure you want to clear all saved data? This cannot be undone.')) {
+                localStorage.removeItem('tournamentData');
+                
+                // Reset all data
+                participants = [];
+                matches = [];
+                tournamentInitialized = false;
+                bracketSystem = 'single';
+                
+                document.getElementById('tournamentName').value = 'My Tournament';
+                document.getElementById('bracketSystem').value = 'single';
+                
+                updateParticipantsList();
+                renderBracket();
+                updateInfo();
+                
+                showToast('All data cleared', 'success');
+            }
+        }
+        
+        // Auto-save function (called after any data change)
+        function autoSave() {
+            saveToLocalStorage();
+        }
+        
+        // ============== DATA EXPORT/IMPORT FUNCTIONS ==============
+        
+        // Export data to JSON file
+        function exportData() {
+            const data = {
+                participants: participants,
+                matches: matches,
+                tournamentInitialized: tournamentInitialized,
+                bracketSystem: bracketSystem,
+                tournamentName: document.getElementById('tournamentName').value,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `tournament_${new Date().toISOString().slice(0,10)}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            showToast('Data exported successfully', 'success');
+        }
+        
+        // Import data from JSON file
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    // Validate data structure
+                    if (!data.participants || !data.matches) {
+                        throw new Error('Invalid file format');
+                    }
+                    
+                    // Confirm before overwriting
+                    if (confirm('Import will overwrite current data. Continue?')) {
+                        participants = data.participants || [];
+                        matches = data.matches || [];
+                        tournamentInitialized = data.tournamentInitialized || false;
+                        bracketSystem = data.bracketSystem || 'single';
+                        
+                        if (data.tournamentName) {
+                            document.getElementById('tournamentName').value = data.tournamentName;
+                        }
+                        
+                        document.getElementById('bracketSystem').value = bracketSystem;
+                        
+                        updateParticipantsList();
+                        renderBracket();
+                        updateInfo();
+                        autoSave();
+                        
+                        showToast('Data imported successfully', 'success');
+                    }
+                    
+                } catch (e) {
+                    console.error('Import error:', e);
+                    showToast('Error importing file: Invalid format', 'error');
+                }
+                
+                // Reset file input
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+        
+        // ============== UI HELPER FUNCTIONS ==============
+        
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Save system preference
+        function saveSystemPreference() {
+            bracketSystem = document.getElementById('bracketSystem').value;
+            updateInfo();
+            autoSave();
+        }
+        
+        // ============== CORE FUNCTIONS ==============
+        
+        // Add participant
+        function addParticipant() {
+            const nameInput = document.getElementById('participantName');
+            const name = nameInput.value.trim();
+            
+            if (participants.length >= 30) {
+                showToast('Maximum 30 participants allowed!', 'warning');
+                return;
+            }
+            
+            if (name === '') {
+                showToast('Please enter a team name', 'warning');
+                return;
+            }
+            
+            // Generate random color for team emblem
+            const colors = ['#4a90e2', '#9b59b6', '#e74c3c', '#27ae60', '#f39c12', '#1abc9c', '#3498db', '#e67e22'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            participants.push({
+                id: Date.now() + Math.random(),
+                name: name,
+                color: randomColor,
+                wins: 0,
+                losses: 0,
+                draws: 0,
+                totalKills: 0,
+                totalDuration: 0,
+                points: 0,
+                buchholz: 0,
+                opponents: []
+            });
+            
+            nameInput.value = '';
+            updateParticipantsList();
+            updateInfo();
+            autoSave();
+        }
+        
+        // Edit participant
+        function editParticipant(id) {
+            const participant = participants.find(p => p.id === id);
+            if (participant) {
+                currentEditId = id;
+                document.getElementById('editParticipantName').value = participant.name;
+                document.getElementById('editModal').style.display = 'flex';
+            }
+        }
+        
+        // Save edit participant
+        function saveEditParticipant() {
+            if (!currentEditId) return;
+            
+            const newName = document.getElementById('editParticipantName').value.trim();
+            if (newName === '') {
+                showToast('Please enter a team name', 'warning');
+                return;
+            }
+            
+            const participant = participants.find(p => p.id === currentEditId);
+            if (participant) {
+                participant.name = newName;
+                
+                // Update participant name in matches
+                matches.forEach(match => {
+                    if (match.team1 && match.team1.id === currentEditId) {
+                        match.team1.name = newName;
+                    }
+                    if (match.team2 && match.team2.id === currentEditId) {
+                        match.team2.name = newName;
+                    }
+                });
+                
+                updateParticipantsList();
+                if (tournamentInitialized) {
+                    renderBracket();
+                }
+                autoSave();
+            }
+            
+            closeEditModal();
+        }
+        
+        // Close edit modal
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            currentEditId = null;
+        }
+        
+        // Remove participant
+        function removeParticipant(id) {
+            if (confirm('Are you sure you want to remove this team?')) {
+                participants = participants.filter(p => p.id !== id);
+                
+                // Remove participant from matches
+                matches = matches.filter(m => 
+                    !(m.team1 && m.team1.id === id) && 
+                    !(m.team2 && m.team2.id === id)
+                );
+                
+                updateParticipantsList();
+                if (tournamentInitialized) {
+                    renderBracket();
+                }
+                updateInfo();
+                autoSave();
+            }
+        }
+        
+        // Update participants list UI
+        function updateParticipantsList() {
+            const list = document.getElementById('participantsList');
+            const countSpan = document.getElementById('participantListCount');
+            
+            if (countSpan) {
+                countSpan.textContent = participants.length;
+            }
+            
+            if (participants.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <p>No participants added yet</p>
+                        <small>Use the form above to add teams manually</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = '';
+            
+            participants.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'participant-card';
+                card.style.borderLeftColor = p.color || '#9b59b6';
+                
+                const matchesPlayed = p.wins + p.losses + p.draws;
+                const winRate = matchesPlayed > 0 ? ((p.wins / matchesPlayed) * 100).toFixed(1) : 0;
+                
+                card.innerHTML = `
+                    <div class="participant-info">
+                        <span class="participant-name">
+                            <i class="fas fa-shield-alt" style="color: ${p.color || '#9b59b6'}; margin-right: 5px;"></i>
+                            ${p.name}
+                        </span>
+                        <span class="participant-stats">
+                            W: ${p.wins} | L: ${p.losses} | D: ${p.draws} | WR: ${winRate}%
+                        </span>
+                    </div>
+                    <div class="participant-actions">
+                        <i class="fas fa-edit edit-participant" onclick="editParticipant('${p.id}')" title="Edit team"></i>
+                        <i class="fas fa-times remove-participant" onclick="removeParticipant('${p.id}')" title="Remove team"></i>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+        
+        // Update info display
+        function updateInfo() {
+            document.getElementById('participantCount').textContent = participants.length + '/30';
+            document.getElementById('matchCount').textContent = matches.length;
+            document.getElementById('currentSystem').textContent = 
+                document.getElementById('bracketSystem').options[document.getElementById('bracketSystem').selectedIndex].text.split(' ')[0];
+        }
+        
+        // Initialize tournament based on selected system
+        function initializeTournament() {
+            if (participants.length < 2) {
+                showToast('Minimum 2 participants required!', 'warning');
+                return;
+            }
+            
+            bracketSystem = document.getElementById('bracketSystem').value;
+            tournamentInitialized = true;
+            
+            // Reset matches
+            matches = [];
+            
+            // Reset participant stats
+            participants.forEach(p => {
+                p.wins = 0;
+                p.losses = 0;
+                p.draws = 0;
+                p.totalKills = 0;
+                p.totalDuration = 0;
+                p.points = 0;
+                p.buchholz = 0;
+                p.opponents = [];
+            });
+            
+            // Generate initial bracket based on system
+            switch(bracketSystem) {
+                case 'single':
+                    generateSingleElimination();
+                    break;
+                case 'double':
+                    generateDoubleElimination();
+                    break;
+                case 'group':
+                    generateGroupStage();
+                    break;
+                case 'swiss':
+                    generateSwissSystem();
+                    break;
+            }
+            
+            renderBracket();
+            updateParticipantsList();
+            updateInfo();
+            autoSave();
+            
+            showToast('Tournament initialized successfully!', 'success');
+        }
+        
+        // Generate Single Elimination bracket
+        function generateSingleElimination() {
+            const numParticipants = participants.length;
+            const numRounds = Math.ceil(Math.log2(numParticipants));
+            const totalSlots = Math.pow(2, numRounds);
+            
+            // Shuffle participants
+            let shuffledParticipants = [...participants].sort(() => Math.random() - 0.5);
+            let bracketParticipants = [...shuffledParticipants];
+            
+            // Add BYEs if needed
+            while (bracketParticipants.length < totalSlots) {
+                bracketParticipants.push({ id: 'bye-' + Date.now() + Math.random(), name: 'BYE', isBye: true });
+            }
+            
+            // Generate first round matches
+            for (let i = 0; i < totalSlots; i += 2) {
+                matches.push({
+                    id: 'match-' + Date.now() + i + Math.random(),
+                    round: 1,
+                    matchNumber: i/2 + 1,
+                    team1: bracketParticipants[i],
+                    team2: bracketParticipants[i+1],
+                    team1Score: null,
+                    team2Score: null,
+                    team1Kills: 0,
+                    team2Kills: 0,
+                    team1Duration: 0,
+                    team2Duration: 0,
+                    winner: null,
+                    nextMatchId: i/4 < Math.pow(2, numRounds - 2) ? 'round2-match-' + Math.floor(i/4) + '-' + Date.now() : null,
+                    completed: false
+                });
+            }
+            
+            // Generate subsequent rounds
+            for (let round = 2; round <= numRounds; round++) {
+                const matchesInRound = Math.pow(2, numRounds - round);
+                for (let i = 0; i < matchesInRound; i++) {
+                    matches.push({
+                        id: 'round' + round + '-match-' + i + '-' + Date.now() + Math.random(),
+                        round: round,
+                        matchNumber: i+1,
+                        team1: null,
+                        team2: null,
+                        team1Score: null,
+                        team2Score: null,
+                        team1Kills: 0,
+                        team2Kills: 0,
+                        team1Duration: 0,
+                        team2Duration: 0,
+                        winner: null,
+                        nextMatchId: round < numRounds ? 'round' + (round+1) + '-match-' + Math.floor(i/2) + '-' + Date.now() + Math.random() : null,
+                        completed: false
+                    });
+                }
+            }
+        }
+        
+        // Generate Double Elimination bracket (simplified)
+        function generateDoubleElimination() {
+            generateSingleElimination();
+            showToast('Double Elimination mode activated', 'info');
+        }
+        
+        // Generate Group Stage
+        function generateGroupStage() {
+            const numGroups = Math.ceil(participants.length / 4);
+            const groups = [];
+            
+            // Shuffle and distribute participants
+            let shuffled = [...participants].sort(() => Math.random() - 0.5);
+            
+            for (let i = 0; i < numGroups; i++) {
+                groups.push({
+                    name: String.fromCharCode(65 + i),
+                    teams: shuffled.slice(i * 4, (i + 1) * 4)
+                });
+            }
+            
+            // Generate group matches (round robin)
+            groups.forEach((group, groupIndex) => {
+                for (let i = 0; i < group.teams.length; i++) {
+                    for (let j = i + 1; j < group.teams.length; j++) {
+                        if (group.teams[i] && group.teams[j]) {
+                            matches.push({
+                                id: 'group-' + group.name + '-match-' + i + '-' + j + '-' + Date.now() + Math.random(),
+                                round: 1,
+                                group: group.name,
+                                team1: group.teams[i],
+                                team2: group.teams[j],
+                                team1Score: null,
+                                team2Score: null,
+                                team1Kills: 0,
+                                team2Kills: 0,
+                                team1Duration: 0,
+                                team2Duration: 0,
+                                winner: null,
+                                completed: false
+                            });
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Generate Swiss System
+        function generateSwissSystem() {
+            // Initial random pairing
+            let shuffled = [...participants].sort(() => Math.random() - 0.5);
+            
+            for (let i = 0; i < shuffled.length; i += 2) {
+                if (i + 1 < shuffled.length) {
+                    matches.push({
+                        id: 'swiss-r1-match-' + (i/2) + '-' + Date.now() + Math.random(),
+                        round: 1,
+                        team1: shuffled[i],
+                        team2: shuffled[i+1],
+                        team1Score: null,
+                        team2Score: null,
+                        team1Kills: 0,
+                        team2Kills: 0,
+                        team1Duration: 0,
+                        team2Duration: 0,
+                        winner: null,
+                        completed: false
+                    });
+                }
+            }
+        }
+        
+        // Render bracket based on current system
+        function renderBracket() {
+            const wrapper = document.getElementById('bracketWrapper');
+            
+            if (!tournamentInitialized || matches.length === 0) {
+                wrapper.innerHTML = `
+                    <div style="text-align: center; width: 100%; padding: 50px; color: #666;">
+                        <i class="fas fa-sitemap" style="font-size: 3em; margin-bottom: 15px;"></i>
+                        <p>No tournament initialized yet</p>
+                        <small>Add participants and click "Initialize Tournament" to generate bracket</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            if (bracketSystem === 'group') {
+                renderGroupStage(wrapper);
+            } else if (bracketSystem === 'swiss') {
+                renderSwissSystem(wrapper);
+            } else {
+                renderEliminationBracket(wrapper);
+            }
+        }
+        
+        // Render elimination bracket (single/double)
+        function renderEliminationBracket(wrapper) {
+            const rounds = [...new Set(matches.map(m => m.round))].sort((a,b) => a-b);
+            wrapper.innerHTML = '';
+            
+            rounds.forEach(round => {
+                const roundDiv = document.createElement('div');
+                roundDiv.className = 'round';
+                
+                const roundTitle = document.createElement('div');
+                roundTitle.className = 'round-title';
+                roundTitle.textContent = round === Math.max(...rounds) ? '🏆 FINALS 🏆' : `⚔️ ROUND ${round} ⚔️`;
+                roundDiv.appendChild(roundTitle);
+                
+                const roundMatches = matches.filter(m => m.round === round);
+                roundMatches.forEach(match => {
+                    const matchDiv = createMatchElement(match);
+                    roundDiv.appendChild(matchDiv);
+                });
+                
+                wrapper.appendChild(roundDiv);
+            });
+            
+            // Find champion
+            const finalMatch = matches.find(m => m.round === Math.max(...rounds) && m.completed);
+            if (finalMatch && finalMatch.winner) {
+                const champion = participants.find(p => p.id === finalMatch.winner);
+                if (champion) {
+                    setTimeout(() => {
+                        showToast(`🏆 ${champion.name} is the CHAMPION! 🏆`, 'success');
+                    }, 500);
+                }
+            }
+        }
+        
+        // Create match element
+        function createMatchElement(match) {
+            const matchDiv = document.createElement('div');
+            matchDiv.className = 'match';
+            matchDiv.id = match.id;
+            
+            // Add champion class if this is final match with winner
+            const rounds = [...new Set(matches.map(m => m.round))];
+            if (match.round === Math.max(...rounds) && match.completed) {
+                matchDiv.classList.add('champion');
+            }
+            
+            const matchHeader = document.createElement('div');
+            matchHeader.className = 'match-header';
+            
+            const status = match.completed ? '✅ Completed' : '⏳ Pending';
+            const statusClass = match.completed ? 'status-completed' : 'status-pending';
+            
+            matchHeader.innerHTML = `
+                <span><i class="fas fa-crosshairs"></i> Match ${match.matchNumber || ''}</span>
+                <span class="match-status ${statusClass}">${status}</span>
+                <span>${match.group ? 'Group ' + match.group : ''}</span>
+            `;
+            
+            matchDiv.appendChild(matchHeader);
+            
+            // Team 1
+            const team1Row = document.createElement('div');
+            team1Row.className = `team-row ${match.winner && match.team1 && match.winner === match.team1.id ? 'winner' : ''}`;
+            team1Row.onclick = () => openScoreModal(match.id, 'team1');
+            
+            if (match.team1 && !match.team1.isBye) {
+                team1Row.innerHTML = `
+                    <span class="team-name">
+                        <i class="fas fa-shield-alt" style="color: ${match.team1.color || '#4a90e2'};"></i>
+                        ${match.team1.name}
+                    </span>
+                    <div class="stats-badge">
+                        <input type="number" class="team-score" value="${match.team1Score !== null ? match.team1Score : ''}" placeholder="Score" min="0" step="1" onclick="event.stopPropagation()" onchange="updateScore('${match.id}', 'team1', 'score', this.value)">
+                        <input type="number" class="team-kills" value="${match.team1Kills || 0}" placeholder="💀" min="0" onclick="event.stopPropagation()" onchange="updateScore('${match.id}', 'team1', 'kills', this.value)" title="Total Kills">
+                        <input type="number" class="team-duration" value="${match.team1Duration || 0}" placeholder="⏱️" min="0" onclick="event.stopPropagation()" onchange="updateScore('${match.id}', 'team1', 'duration', this.value)" title="Duration (seconds)">
+                    </div>
+                `;
+            } else if (match.team1 && match.team1.isBye) {
+                team1Row.innerHTML = `<span class="team-name"><i class="fas fa-sleep"></i> BYE</span><span class="bye-indicator">Auto Win</span>`;
+            } else {
+                team1Row.innerHTML = `<span class="team-name"><i class="fas fa-question-circle"></i> TBD</span>`;
+            }
+            
+            // Team 2
+            const team2Row = document.createElement('div');
+            team2Row.className = `team-row ${match.winner && match.team2 && match.winner === match.team2.id ? 'winner' : ''}`;
+            team2Row.onclick = () => openScoreModal(match.id, 'team2');
+            
+            if (match.team2 && !match.team2.isBye) {
+                team2Row.innerHTML = `
+                    <span class="team-name">
+                        <i class="fas fa-shield-alt" style="color: ${match.team2.color || '#9b59b6'};"></i>
+                        ${match.team2.name}
+                    </span>
+                    <div class="stats-badge">
+                        <input type="number" class="team-score" value="${match.team2Score !== null ? match.team2Score : ''}" placeholder="Score" min="0" step="1" onclick="event.stopPropagation()" onchange="updateScore('${match.id}', 'team2', 'score', this.value)">
+                        <input type="number" class="team-kills" value="${match.team2Kills || 0}" placeholder="💀" min="0" onclick="event.stopPropagation()" onchange="updateScore('${match.id}', 'team2', 'kills', this.value)" title="Total Kills">
+                        <input type="number" class="team-duration" value="${match.team2Duration || 0}" placeholder="⏱️" min="0" onclick="event.stopPropagation()" onchange="updateScore('${match.id}', 'team2', 'duration', this.value)" title="Duration (seconds)">
+                    </div>
+                `;
+            } else if (match.team2 && match.team2.isBye) {
+                team2Row.innerHTML = `<span class="team-name"><i class="fas fa-sleep"></i> BYE</span><span class="bye-indicator">Auto Win</span>`;
+            } else {
+                team2Row.innerHTML = `<span class="team-name"><i class="fas fa-question-circle"></i> TBD</span>`;
+            }
+            
+            matchDiv.appendChild(team1Row);
+            matchDiv.appendChild(team2Row);
+            
+            return matchDiv;
+        }
+        
+        // Open modal for score input
+        function openScoreModal(matchId, team) {
+            if (!tournamentInitialized) return;
+            
+            const match = matches.find(m => m.id === matchId);
+            if (!match) return;
+            
+            currentMatchId = matchId;
+            
+            const modal = document.getElementById('scoreModal');
+            const modalTeams = document.getElementById('modalTeams');
+            
+            let html = '';
+            if (match.team1 && !match.team1.isBye) {
+                html += `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: ${match.team1.color || '#4a90e2'}; margin-bottom: 10px;">
+                            <i class="fas fa-shield-alt"></i> ${match.team1.name}
+                        </h3>
+                        <div style="display: grid; gap: 10px;">
+                            <input type="number" id="modalTeam1Score" class="form-control" placeholder="Score" value="${match.team1Score !== null ? match.team1Score : ''}" min="0">
+                            <input type="number" id="modalTeam1Kills" class="form-control" placeholder="Total Kills" value="${match.team1Kills || 0}" min="0">
+                            <input type="number" id="modalTeam1Duration" class="form-control" placeholder="Match Duration (seconds)" value="${match.team1Duration || 0}" min="0">
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (match.team2 && !match.team2.isBye) {
+                html += `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color: ${match.team2.color || '#9b59b6'}; margin-bottom: 10px;">
+                            <i class="fas fa-shield-alt"></i> ${match.team2.name}
+                        </h3>
+                        <div style="display: grid; gap: 10px;">
+                            <input type="number" id="modalTeam2Score" class="form-control" placeholder="Score" value="${match.team2Score !== null ? match.team2Score : ''}" min="0">
+                            <input type="number" id="modalTeam2Kills" class="form-control" placeholder="Total Kills" value="${match.team2Kills || 0}" min="0">
+                            <input type="number" id="modalTeam2Duration" class="form-control" placeholder="Match Duration (seconds)" value="${match.team2Duration || 0}" min="0">
+                        </div>
+                    </div>
+                `;
+            }
+            
+            modalTeams.innerHTML = html;
+            modal.style.display = 'flex';
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('scoreModal').style.display = 'none';
+            currentMatchId = null;
+        }
+        
+        // Save match score from modal
+        function saveMatchScore() {
+            if (!currentMatchId) return;
+            
+            const match = matches.find(m => m.id === currentMatchId);
+            if (!match) return;
+            
+            const team1Score = document.getElementById('modalTeam1Score') ? parseInt(document.getElementById('modalTeam1Score').value) : null;
+            const team1Kills = document.getElementById('modalTeam1Kills') ? parseInt(document.getElementById('modalTeam1Kills').value) || 0 : 0;
+            const team1Duration = document.getElementById('modalTeam1Duration') ? parseInt(document.getElementById('modalTeam1Duration').value) || 0 : 0;
+            
+            const team2Score = document.getElementById('modalTeam2Score') ? parseInt(document.getElementById('modalTeam2Score').value) : null;
+            const team2Kills = document.getElementById('modalTeam2Kills') ? parseInt(document.getElementById('modalTeam2Kills').value) || 0 : 0;
+            const team2Duration = document.getElementById('modalTeam2Duration') ? parseInt(document.getElementById('modalTeam2Duration').value) || 0 : 0;
+            
+            // Update match data
+            match.team1Score = team1Score;
+            match.team2Score = team2Score;
+            match.team1Kills = team1Kills;
+            match.team2Kills = team2Kills;
+            match.team1Duration = team1Duration;
+            match.team2Duration = team2Duration;
+            
+            // Determine winner
+            if (team1Score !== null && team2Score !== null) {
+                if (team1Score > team2Score) {
+                    match.winner = match.team1.id;
+                    updateParticipantStats(match.team1.id, match.team2.id, true, team1Kills, team2Kills, team1Duration, team2Duration);
+                } else if (team2Score > team1Score) {
+                    match.winner = match.team2.id;
+                    updateParticipantStats(match.team2.id, match.team1.id, true, team2Kills, team1Kills, team2Duration, team1Duration);
+                } else {
+                    // Tie - use tie-breaker (average kills)
+                    if (team1Kills > team2Kills) {
+                        match.winner = match.team1.id;
+                        updateParticipantStats(match.team1.id, match.team2.id, true, team1Kills, team2Kills, team1Duration, team2Duration);
+                    } else if (team2Kills > team1Kills) {
+                        match.winner = match.team2.id;
+                        updateParticipantStats(match.team2.id, match.team1.id, true, team2Kills, team1Kills, team2Duration, team1Duration);
+                    } else {
+                        // Still tied, use duration (shorter is better)
+                        if (team1Duration < team2Duration) {
+                            match.winner = match.team1.id;
+                            updateParticipantStats(match.team1.id, match.team2.id, true, team1Kills, team2Kills, team1Duration, team2Duration);
+                        } else {
+                            match.winner = match.team2.id;
+                            updateParticipantStats(match.team2.id, match.team1.id, true, team2Kills, team1Kills, team2Duration, team1Duration);
+                        }
+                    }
+                }
+                match.completed = true;
+                
+                // Update next match if exists
+                if (match.nextMatchId) {
+                    updateNextMatch(match.nextMatchId, match.winner);
+                }
+            }
+            
+            closeModal();
+            renderBracket();
+            updateParticipantsList();
+            autoSave();
+            
+            // Generate next round matches if applicable
+            if (bracketSystem !== 'swiss') {
+                generateNextRound();
+            }
+        }
+        
+        // Update participant statistics
+        function updateParticipantStats(winnerId, loserId, isWin, winnerKills, loserKills, winnerDuration, loserDuration) {
+            const winner = participants.find(p => p.id === winnerId);
+            const loser = participants.find(p => p.id === loserId);
+            
+            if (winner) {
+                winner.wins++;
+                winner.totalKills += winnerKills;
+                winner.totalDuration += winnerDuration;
+                winner.points += 3;
+                winner.opponents.push(loserId);
+            }
+            
+            if (loser) {
+                loser.losses++;
+                loser.totalKills += loserKills;
+                loser.totalDuration += loserDuration;
+                loser.opponents.push(winnerId);
+            }
+        }
+        
+        // Update score from inline inputs
+        function updateScore(matchId, team, type, value) {
+            const match = matches.find(m => m.id === matchId);
+            if (!match) return;
+            
+            const numValue = parseInt(value) || 0;
+            
+            if (team === 'team1') {
+                if (type === 'score') match.team1Score = numValue;
+                else if (type === 'kills') match.team1Kills = numValue;
+                else if (type === 'duration') match.team1Duration = numValue;
+            } else {
+                if (type === 'score') match.team2Score = numValue;
+                else if (type === 'kills') match.team2Kills = numValue;
+                else if (type === 'duration') match.team2Duration = numValue;
+            }
+            
+            // Auto-determine winner if both scores are entered
+            if (match.team1Score !== null && match.team2Score !== null && 
+                match.team1Score !== '' && match.team2Score !== '') {
+                
+                if (match.team1Score > match.team2Score) {
+                    match.winner = match.team1.id;
+                    updateParticipantStats(match.team1.id, match.team2.id, true, match.team1Kills, match.team2Kills, match.team1Duration, match.team2Duration);
+                } else if (match.team2Score > match.team1Score) {
+                    match.winner = match.team2.id;
+                    updateParticipantStats(match.team2.id, match.team1.id, true, match.team2Kills, match.team1Kills, match.team2Duration, match.team1Duration);
+                } else {
+                    // Tie - use tie-breaker
+                    if (match.team1Kills > match.team2Kills) {
+                        match.winner = match.team1.id;
+                        updateParticipantStats(match.team1.id, match.team2.id, true, match.team1Kills, match.team2Kills, match.team1Duration, match.team2Duration);
+                    } else if (match.team2Kills > match.team1Kills) {
+                        match.winner = match.team2.id;
+                        updateParticipantStats(match.team2.id, match.team1.id, true, match.team2Kills, match.team1Kills, match.team2Duration, match.team1Duration);
+                    } else {
+                        // Still tied, use duration
+                        if (match.team1Duration < match.team2Duration) {
+                            match.winner = match.team1.id;
+                            updateParticipantStats(match.team1.id, match.team2.id, true, match.team1Kills, match.team2Kills, match.team1Duration, match.team2Duration);
+                        } else {
+                            match.winner = match.team2.id;
+                            updateParticipantStats(match.team2.id, match.team1.id, true, match.team2Kills, match.team1Kills, match.team2Duration, match.team1Duration);
+                        }
+                    }
+                }
+                match.completed = true;
+                
+                if (match.nextMatchId) {
+                    updateNextMatch(match.nextMatchId, match.winner);
+                }
+                
+                renderBracket();
+                updateParticipantsList();
+                autoSave();
+                generateNextRound();
+            }
+        }
+        
+        // Update next match with winner
+        function updateNextMatch(nextMatchId, winnerId) {
+            const nextMatch = matches.find(m => m.id === nextMatchId);
+            if (!nextMatch) return;
+            
+            const winner = participants.find(p => p.id === winnerId);
+            if (!winner) return;
+            
+            if (!nextMatch.team1) {
+                nextMatch.team1 = winner;
+            } else if (!nextMatch.team2 && nextMatch.team1.id !== winner.id) {
+                nextMatch.team2 = winner;
+            }
+        }
+        
+        // Generate next round for elimination brackets
+        function generateNextRound() {
+            if (bracketSystem === 'single') {
+                renderBracket();
+            }
+        }
+        
+        // Render Group Stage
+        function renderGroupStage(wrapper) {
+            wrapper.innerHTML = '';
+            
+            const groups = [...new Set(matches.map(m => m.group))];
+            const groupsContainer = document.createElement('div');
+            groupsContainer.className = 'groups-container';
+            
+            groups.forEach(group => {
+                const groupCard = document.createElement('div');
+                groupCard.className = 'group-card';
+                
+                const groupTitle = document.createElement('div');
+                groupTitle.className = 'group-title';
+                groupTitle.textContent = `GROUP ${group}`;
+                groupCard.appendChild(groupTitle);
+                
+                const table = document.createElement('table');
+                table.className = 'group-table';
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>P</th>
+                            <th>W</th>
+                            <th>L</th>
+                            <th>Kills</th>
+                            <th>Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody id="group-${group}">
+                    </tbody>
+                `;
+                
+                // Calculate standings
+                const groupMatches = matches.filter(m => m.group === group);
+                const teams = [];
+                
+                groupMatches.forEach(match => {
+                    if (match.team1 && !match.team1.isBye && !teams.find(t => t.id === match.team1.id)) {
+                        teams.push({
+                            ...match.team1,
+                            played: 0,
+                            wins: 0,
+                            losses: 0,
+                            kills: 0,
+                            points: 0
+                        });
+                    }
+                    if (match.team2 && !match.team2.isBye && !teams.find(t => t.id === match.team2.id)) {
+                        teams.push({
+                            ...match.team2,
+                            played: 0,
+                            wins: 0,
+                            losses: 0,
+                            kills: 0,
+                            points: 0
+                        });
+                    }
+                });
+                
+                // Update stats
+                groupMatches.forEach(match => {
+                    if (match.completed) {
+                        const t1 = teams.find(t => t.id === match.team1.id);
+                        const t2 = teams.find(t => t.id === match.team2.id);
+                        
+                        if (t1) {
+                            t1.played++;
+                            t1.kills += match.team1Kills || 0;
+                            if (match.winner === match.team1.id) {
+                                t1.wins++;
+                                t1.points += 3;
+                            } else {
+                                t1.losses++;
+                            }
+                        }
+                        
+                        if (t2) {
+                            t2.played++;
+                            t2.kills += match.team2Kills || 0;
+                            if (match.winner === match.team2.id) {
+                                t2.wins++;
+                                t2.points += 3;
+                            } else {
+                                t2.losses++;
+                            }
+                        }
+                    }
+                });
+                
+                // Sort by points, then kills
+                teams.sort((a,b) => {
+                    if (b.points !== a.points) return b.points - a.points;
+                    return b.kills - a.kills;
+                });
+                
+                const tbody = table.querySelector(`#group-${group}`);
+                teams.forEach((team, index) => {
+                    const row = document.createElement('tr');
+                    if (index < 2) {
+                        row.classList.add('qualified');
+                    }
+                    
+                    const medal = index === 0 ? '<span class="medal gold">🥇</span>' : 
+                                 index === 1 ? '<span class="medal silver">🥈</span>' :
+                                 index === 2 ? '<span class="medal bronze">🥉</span>' : '';
+                    
+                    row.innerHTML = `
+                        <td>${medal} ${team.name}</td>
+                        <td>${team.played}</td>
+                        <td>${team.wins}</td>
+                        <td>${team.losses}</td>
+                        <td>${team.kills}</td>
+                        <td><strong>${team.points}</strong></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+                groupCard.appendChild(table);
+                
+                // Add matches in this group
+                groupMatches.forEach(match => {
+                    const matchElement = createMatchElement(match);
+                    matchElement.style.marginTop = '15px';
+                    groupCard.appendChild(matchElement);
+                });
+                
+                groupsContainer.appendChild(groupCard);
+            });
+            
+            wrapper.appendChild(groupsContainer);
+        }
+        
+        // Render Swiss System
+        function renderSwissSystem(wrapper) {
+            wrapper.innerHTML = '';
+            
+            // Calculate standings with tie-breakers
+            participants.forEach(p => {
+                p.wins = 0;
+                p.losses = 0;
+                p.draws = 0;
+                p.totalKills = 0;
+                p.totalDuration = 0;
+                p.points = 0;
+                p.opponents = [];
+            });
+            
+            matches.forEach(match => {
+                if (match.completed && match.team1 && match.team2) {
+                    const t1 = participants.find(p => p.id === match.team1.id);
+                    const t2 = participants.find(p => p.id === match.team2.id);
+                    
+                    if (t1 && t2) {
+                        t1.opponents.push(t2.id);
+                        t2.opponents.push(t1.id);
+                        
+                        t1.totalKills += match.team1Kills || 0;
+                        t2.totalKills += match.team2Kills || 0;
+                        
+                        t1.totalDuration += match.team1Duration || 0;
+                        t2.totalDuration += match.team2Duration || 0;
+                        
+                        if (match.winner === t1.id) {
+                            t1.wins++;
+                            t1.points += 3;
+                            t2.losses++;
+                        } else if (match.winner === t2.id) {
+                            t2.wins++;
+                            t2.points += 3;
+                            t1.losses++;
+                        } else {
+                            t1.draws++;
+                            t2.draws++;
+                            t1.points += 1;
+                            t2.points += 1;
+                        }
+                    }
+                }
+            });
+            
+            // Calculate Buchholz (sum of opponents' scores)
+            participants.forEach(p => {
+                p.buchholz = 0;
+                p.opponents.forEach(oppId => {
+                    const opp = participants.find(op => op.id === oppId);
+                    if (opp) {
+                        p.buchholz += opp.points;
+                    }
+                });
+            });
+            
+            // Create standings table
+            const standingsDiv = document.createElement('div');
+            standingsDiv.style.marginBottom = '30px';
+            
+            const table = document.createElement('table');
+            table.className = 'swiss-table';
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Team</th>
+                        <th>Matches</th>
+                        <th>Wins</th>
+                        <th>Losses</th>
+                        <th>Draws</th>
+                        <th>Kills</th>
+                        <th>Avg Kill</th>
+                        <th>Duration</th>
+                        <th>Points</th>
+                        <th>Buchholz</th>
+                    </tr>
+                </thead>
+                <tbody id="swiss-standings">
+                </tbody>
+            `;
+            
+            // Sort with tie-breakers: Points > Buchholz > Average Kills > Duration
+            const sortedParticipants = [...participants].sort((a,b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                if (b.buchholz !== a.buchholz) return b.buchholz - a.buchholz;
+                const avgKillsA = a.totalKills / (a.wins + a.losses + a.draws) || 0;
+                const avgKillsB = b.totalKills / (b.wins + b.losses + b.draws) || 0;
+                if (avgKillsB !== avgKillsA) return avgKillsB - avgKillsA;
+                return (a.totalDuration / (a.wins + a.losses + a.draws) || 0) - 
+                       (b.totalDuration / (b.wins + b.losses + b.draws) || 0);
+            });
+            
+            const tbody = document.getElementById('swiss-standings');
+            sortedParticipants.forEach((p, index) => {
+                const matchesPlayed = p.wins + p.losses + p.draws;
+                const avgKills = matchesPlayed > 0 ? (p.totalKills / matchesPlayed).toFixed(2) : 0;
+                const avgDuration = matchesPlayed > 0 ? (p.totalDuration / matchesPlayed).toFixed(0) : 0;
+                
+                const row = document.createElement('tr');
+                if (index < 3) {
+                    row.classList.add('top-three');
+                }
+                
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+                
+                row.innerHTML = `
+                    <td><strong>#${index + 1} ${medal}</strong></td>
+                    <td><i class="fas fa-shield-alt" style="color: ${p.color || '#9b59b6'};"></i> ${p.name}</td>
+                    <td>${matchesPlayed}</td>
+                    <td>${p.wins}</td>
+                    <td>${p.losses}</td>
+                    <td>${p.draws}</td>
+                    <td>${p.totalKills}</td>
+                    <td>${avgKills}</td>
+                    <td>${avgDuration}s</td>
+                    <td><strong>${p.points}</strong></td>
+                    <td>${p.buchholz}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            standingsDiv.appendChild(table);
+            wrapper.appendChild(standingsDiv);
+            
+            // Add current round matches
+            const matchesDiv = document.createElement('div');
+            matchesDiv.innerHTML = '<h3 style="color: #9b59b6; margin-bottom: 15px;"><i class="fas fa-fist-raised"></i> Current Round Matches</h3>';
+            
+            const currentRoundMatches = matches.filter(m => !m.completed);
+            if (currentRoundMatches.length === 0) {
+                matchesDiv.innerHTML += '<p style="text-align: center; color: #666;">All matches completed!</p>';
+            } else {
+                currentRoundMatches.forEach(match => {
+                    matchesDiv.appendChild(createMatchElement(match));
+                });
+            }
+            
+            wrapper.appendChild(matchesDiv);
+        }
+        
+        // Export to Excel
+        function exportToExcel() {
+            const tournamentName = document.getElementById('tournamentName').value || 'Tournament';
+            const wb = XLSX.utils.book_new();
+            
+            // Create standings sheet
+            const standingsData = [['Rank', 'Team', 'Matches', 'Wins', 'Losses', 'Draws', 'Total Kills', 'Avg Kills', 'Points', 'Buchholz']];
+            
+            // Calculate latest stats
+            participants.forEach(p => {
+                p.wins = 0;
+                p.losses = 0;
+                p.draws = 0;
+                p.totalKills = 0;
+                p.points = 0;
+                p.opponents = [];
+            });
+            
+            matches.forEach(match => {
+                if (match.completed && match.team1 && match.team2) {
+                    const t1 = participants.find(p => p.id === match.team1.id);
+                    const t2 = participants.find(p => p.id === match.team2.id);
+                    
+                    if (t1 && t2) {
+                        t1.totalKills += match.team1Kills || 0;
+                        t2.totalKills += match.team2Kills || 0;
+                        
+                        if (match.winner === t1.id) {
+                            t1.wins++;
+                            t1.points += 3;
+                            t2.losses++;
+                        } else if (match.winner === t2.id) {
+                            t2.wins++;
+                            t2.points += 3;
+                            t1.losses++;
+                        }
+                    }
+                }
+            });
+            
+            // Calculate Buchholz
+            participants.forEach(p => {
+                p.buchholz = 0;
+            });
+            
+            participants.forEach((p, index) => {
+                const matchesPlayed = p.wins + p.losses + p.draws;
+                const avgKills = matchesPlayed > 0 ? (p.totalKills / matchesPlayed).toFixed(2) : 0;
+                standingsData.push([
+                    index + 1,
+                    p.name,
+                    matchesPlayed,
+                    p.wins,
+                    p.losses,
+                    p.draws,
+                    p.totalKills,
+                    avgKills,
+                    p.points,
+                    p.buchholz
+                ]);
+            });
+            
+            const wsStandings = XLSX.utils.aoa_to_sheet(standingsData);
+            XLSX.utils.book_append_sheet(wb, wsStandings, 'Standings');
+            
+            // Create matches sheet
+            const matchesData = [['Match ID', 'Round/Group', 'Team 1', 'Score 1', 'Kills 1', 'Team 2', 'Score 2', 'Kills 2', 'Winner', 'Duration 1', 'Duration 2']];
+            
+            matches.forEach(m => {
+                if (m.team1 && m.team2) {
+                    matchesData.push([
+                        m.id,
+                        m.round ? 'Round ' + m.round : (m.group ? 'Group ' + m.group : 'Swiss'),
+                        m.team1.name || 'BYE',
+                        m.team1Score || 0,
+                        m.team1Kills || 0,
+                        m.team2.name || 'BYE',
+                        m.team2Score || 0,
+                        m.team2Kills || 0,
+                        m.winner ? (participants.find(p => p.id === m.winner)?.name || 'Unknown') : 'Not Played',
+                        m.team1Duration || 0,
+                        m.team2Duration || 0
+                    ]);
+                }
+            });
+            
+            const wsMatches = XLSX.utils.aoa_to_sheet(matchesData);
+            XLSX.utils.book_append_sheet(wb, wsMatches, 'Matches');
+            
+            // Export
+            XLSX.writeFile(wb, `${tournamentName}_Results.xlsx`);
+            showToast('Excel file exported', 'success');
+        }
+        
+        // Export to PDF
+        function exportToPDF() {
+            const tournamentName = document.getElementById('tournamentName').value || 'Tournament';
+            
+            html2canvas(document.querySelector('.bracket-container')).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'px',
+                    format: [canvas.width * 0.75, canvas.height * 0.75]
+                });
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width * 0.75, canvas.height * 0.75);
+                pdf.save(`${tournamentName}_Bracket.pdf`);
+                showToast('PDF file exported', 'success');
+            });
+        }
+        
+        // Print bracket
+        function printBracket() {
+            window.print();
+        }
+        
+        // ============== DATA MANAGEMENT WRAPPER FUNCTIONS ==============
+        
+        function saveData() {
+            saveToLocalStorage();
+        }
+        
+        function loadData() {
+            loadFromLocalStorage();
+        }
+        
+        function clearData() {
+            clearLocalStorage();
+        }
+        
+        // ============== INITIALIZATION ==============
+        
+        // Load saved data on page load
+        window.onload = function() {
+            // Try to load from localStorage
+            const hasData = loadFromLocalStorage();
+            
+            // If no saved data, show empty state
+            if (!hasData) {
+                updateParticipantsList();
+                renderBracket();
+                updateInfo();
+            }
+            
+            // Set up auto-save for beforeunload
+            window.addEventListener('beforeunload', function() {
+                autoSave();
+            });
+            
+            // Periodic auto-save every 30 seconds
+            setInterval(autoSave, 30000);
+        };
+    </script>
+</body>
+</html>
