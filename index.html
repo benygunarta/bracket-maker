@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tournament Bracket System - Dual Direction Bracket</title>
+    <title>Tournament Bracket System - Multi Input</title>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
@@ -230,6 +230,80 @@
             align-items: center;
         }
 
+        /* Multi Input Section */
+        .multi-input-section {
+            background: rgba(255,255,255,0.03);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .input-count {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .count-input {
+            width: 80px;
+            text-align: center;
+        }
+
+        .participants-input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+        }
+
+        .participant-input-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 3px solid #4a90e2;
+        }
+
+        .input-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #4a90e2, #9b59b6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .input-field {
+            flex: 1;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: white;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #9b59b6;
+        }
+
         /* Participants Section */
         .participants-section {
             background: rgba(255,255,255,0.03);
@@ -281,6 +355,9 @@
         .participant-name {
             font-weight: 600;
             font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .participant-stats {
@@ -378,8 +455,7 @@
             margin-top: 20px;
         }
 
-        /* ============== ENHANCED BRACKET STYLES ============== */
-        
+        /* Bracket Container */
         .bracket-container {
             background: rgba(255,255,255,0.02);
             border-radius: 20px;
@@ -515,31 +591,6 @@
             z-index: 5;
         }
 
-        /* Vertical connectors for multiple matches per round */
-        .round-left .match:not(:last-child)::before {
-            content: '';
-            position: absolute;
-            right: -40px;
-            top: 50%;
-            width: 2px;
-            height: 60px;
-            background: linear-gradient(180deg, #9b59b6, #4a90e2);
-            opacity: 0.4;
-            z-index: 4;
-        }
-
-        .round-right .match:not(:last-child)::before {
-            content: '';
-            position: absolute;
-            left: -40px;
-            top: 50%;
-            width: 2px;
-            height: 60px;
-            background: linear-gradient(180deg, #4a90e2, #9b59b6);
-            opacity: 0.4;
-            z-index: 4;
-        }
-
         /* Match card styling */
         .match {
             background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
@@ -660,11 +711,6 @@
             font-weight: 600;
         }
 
-        .team-score:focus {
-            outline: 2px solid #f1c40f;
-            border-color: transparent;
-        }
-
         .team-kills {
             width: 45px;
             text-align: center;
@@ -725,54 +771,18 @@
         /* Seed number */
         .seed-number {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            background: rgba(255,255,255,0.1);
+            width: 22px;
+            height: 22px;
+            background: linear-gradient(45deg, #4a90e2, #9b59b6);
             border-radius: 50%;
             text-align: center;
-            line-height: 20px;
-            font-size: 0.7em;
-            color: #aaa;
+            line-height: 22px;
+            font-size: 0.75em;
+            color: white;
             margin-right: 5px;
         }
 
-        /* Swiss System Table Enhanced */
-        .swiss-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: rgba(255,255,255,0.03);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        .swiss-table th {
-            background: linear-gradient(90deg, #4a90e2, #9b59b6);
-            padding: 12px 10px;
-            text-align: left;
-            font-weight: 600;
-            color: white;
-            text-transform: uppercase;
-            font-size: 0.8em;
-            letter-spacing: 1px;
-        }
-
-        .swiss-table td {
-            padding: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 0.9em;
-        }
-
-        .swiss-table tr:hover {
-            background: rgba(155,89,182,0.1);
-        }
-
-        .swiss-table tr.top-three {
-            background: linear-gradient(90deg, rgba(241,196,15,0.1), rgba(155,89,182,0.1));
-            border-left: 3px solid #f1c40f;
-        }
-
-        /* Group Stage Enhanced */
+        /* Group Stage */
         .groups-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -798,18 +808,6 @@
             position: relative;
         }
 
-        .group-title::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 2px;
-            background: linear-gradient(90deg, #4a90e2, #9b59b6);
-            border-radius: 2px;
-        }
-
         .group-table {
             width: 100%;
             border-collapse: collapse;
@@ -830,37 +828,30 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        .group-table tr.qualified {
-            background: rgba(39,174,96,0.1);
-            border-left: 3px solid #27ae60;
+        /* Swiss System Table */
+        .swiss-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.03);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        /* Medal emblems */
-        .medal {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 18px;
-            font-size: 10px;
-            font-weight: bold;
-            margin-right: 3px;
+        .swiss-table th {
+            background: linear-gradient(90deg, #4a90e2, #9b59b6);
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+            font-size: 0.8em;
         }
 
-        .medal.gold {
-            background: #f1c40f;
-            color: #000;
-        }
-
-        .medal.silver {
-            background: #bdc3c7;
-            color: #000;
-        }
-
-        .medal.bronze {
-            background: #cd7f32;
-            color: #fff;
+        .swiss-table td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9em;
         }
 
         /* Toast Notification */
@@ -926,21 +917,6 @@
         }
 
         /* Responsive */
-        @media (max-width: 1200px) {
-            .bracket-wrapper {
-                flex-direction: column;
-            }
-            
-            .bracket-left, .bracket-right {
-                flex-direction: column;
-            }
-            
-            .round-left .match::after,
-            .round-right .match::after {
-                display: none;
-            }
-        }
-
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -955,6 +931,19 @@
             .action-buttons {
                 justify-content: center;
             }
+
+            .bracket-wrapper {
+                flex-direction: column;
+            }
+            
+            .bracket-left, .bracket-right {
+                flex-direction: column;
+            }
+            
+            .round-left .match::after,
+            .round-right .match::after {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -963,7 +952,7 @@
         <div class="header-content">
             <div class="logo">
                 <h1>TOURNAMENT BRACKET</h1>
-                <span>DUAL DIRECTION BRACKET SYSTEM</span>
+                <span>MULTI INPUT SYSTEM</span>
             </div>
             <div class="tournament-info">
                 <div class="info-item">
@@ -971,8 +960,8 @@
                     <div class="info-value" id="currentSystem">Single Elimination</div>
                 </div>
                 <div class="info-item">
-                    <div class="info-label">Participants</div>
-                    <div class="info-value" id="participantCount">0/30</div>
+                    <div class="info-label">Total Teams</div>
+                    <div class="info-value" id="totalTeams">0</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Matches</div>
@@ -1001,10 +990,10 @@
                 </select>
             </div>
             <div class="form-group">
-                <label><i class="fas fa-users"></i> Add Participant</label>
+                <label><i class="fas fa-users"></i> Number of Teams</label>
                 <div style="display: flex; gap: 10px;">
-                    <input type="text" class="form-control" id="participantName" placeholder="Enter team name" maxlength="30">
-                    <button class="btn btn-secondary" onclick="addParticipant()"><i class="fas fa-plus"></i> Add</button>
+                    <input type="number" class="form-control" id="teamCount" value="8" min="2" max="30" placeholder="Enter number">
+                    <button class="btn btn-secondary" onclick="generateTeamInputs()"><i class="fas fa-chevron-right"></i> Set</button>
                 </div>
             </div>
         </div>
@@ -1029,17 +1018,33 @@
         </div>
     </div>
 
-    <div class="participants-section">
+    <!-- Multi Input Section -->
+    <div class="multi-input-section" id="multiInputSection" style="display: none;">
+        <div class="input-header">
+            <div class="panel-title" style="margin-bottom: 0;">
+                <i class="fas fa-pencil-alt"></i> Enter Team Names
+            </div>
+            <div class="input-count">
+                <span id="inputCounter">0/0</span>
+                <button class="btn btn-success" onclick="saveAllTeamNames()"><i class="fas fa-check"></i> Save All Teams</button>
+            </div>
+        </div>
+        <div class="participants-input-grid" id="participantsInputGrid">
+            <!-- Input fields will be generated here -->
+        </div>
+    </div>
+
+    <div class="participants-section" id="participantsSection" style="display: none;">
         <div class="participants-header">
             <div class="panel-title" style="margin-bottom: 0;">
-                <i class="fas fa-users"></i> Participants List (Max 30)
+                <i class="fas fa-users"></i> Participants List
             </div>
             <div class="participant-count" style="color: #888;">
                 <span id="participantListCount">0</span> / 30
             </div>
         </div>
         <div class="participants-list" id="participantsList">
-            <!-- Empty state will be shown here when no participants -->
+            <!-- Participants will be shown here -->
         </div>
     </div>
 
@@ -1049,7 +1054,7 @@
             <div style="text-align: center; width: 100%; padding: 50px; color: #666;">
                 <i class="fas fa-sitemap" style="font-size: 3em; margin-bottom: 15px;"></i>
                 <p>No tournament initialized yet</p>
-                <small>Add participants and click "Initialize Tournament" to generate bracket</small>
+                <small>Set number of teams, enter names, and click "Initialize Tournament"</small>
             </div>
         </div>
     </div>
@@ -1094,6 +1099,7 @@
         let currentEditId = null;
         let tournamentInitialized = false;
         let bracketSystem = 'single';
+        let expectedTeamCount = 0;
         
         // ============== LOCAL STORAGE FUNCTIONS ==============
         
@@ -1137,6 +1143,11 @@
                 document.getElementById('bracketSystem').value = bracketSystem;
                 
                 // Update UI
+                if (participants.length > 0) {
+                    document.getElementById('participantsSection').style.display = 'block';
+                    document.getElementById('multiInputSection').style.display = 'none';
+                }
+                
                 updateParticipantsList();
                 renderBracket();
                 updateInfo();
@@ -1162,6 +1173,10 @@
                 
                 document.getElementById('tournamentName').value = 'My Tournament';
                 document.getElementById('bracketSystem').value = 'single';
+                document.getElementById('teamCount').value = '8';
+                
+                document.getElementById('participantsSection').style.display = 'none';
+                document.getElementById('multiInputSection').style.display = 'none';
                 
                 updateParticipantsList();
                 renderBracket();
@@ -1171,14 +1186,13 @@
             }
         }
         
-        // Auto-save function (called after any data change)
+        // Auto-save function
         function autoSave() {
             saveToLocalStorage();
         }
         
         // ============== DATA EXPORT/IMPORT FUNCTIONS ==============
         
-        // Export data to JSON file
         function exportData() {
             const data = {
                 participants: participants,
@@ -1203,7 +1217,6 @@
             showToast('Data exported successfully', 'success');
         }
         
-        // Import data from JSON file
         function importData(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1213,12 +1226,10 @@
                 try {
                     const data = JSON.parse(e.target.result);
                     
-                    // Validate data structure
                     if (!data.participants || !data.matches) {
                         throw new Error('Invalid file format');
                     }
                     
-                    // Confirm before overwriting
                     if (confirm('Import will overwrite current data. Continue?')) {
                         participants = data.participants || [];
                         matches = data.matches || [];
@@ -1231,6 +1242,11 @@
                         
                         document.getElementById('bracketSystem').value = bracketSystem;
                         
+                        if (participants.length > 0) {
+                            document.getElementById('participantsSection').style.display = 'block';
+                            document.getElementById('multiInputSection').style.display = 'none';
+                        }
+                        
                         updateParticipantsList();
                         renderBracket();
                         updateInfo();
@@ -1240,11 +1256,9 @@
                     }
                     
                 } catch (e) {
-                    console.error('Import error:', e);
                     showToast('Error importing file: Invalid format', 'error');
                 }
                 
-                // Reset file input
                 event.target.value = '';
             };
             reader.readAsText(file);
@@ -1252,7 +1266,6 @@
         
         // ============== UI HELPER FUNCTIONS ==============
         
-        // Show toast notification
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -1264,87 +1277,160 @@
             }, 3000);
         }
         
-        // Save system preference
         function saveSystemPreference() {
             bracketSystem = document.getElementById('bracketSystem').value;
             updateInfo();
             autoSave();
         }
         
-        // ============== CORE FUNCTIONS ==============
-        
-        // Add participant
-        function addParticipant() {
-            const nameInput = document.getElementById('participantName');
-            const name = nameInput.value.trim();
-            
-            if (participants.length >= 30) {
-                showToast('Maximum 30 participants allowed!', 'warning');
-                return;
-            }
-            
-            if (name === '') {
-                showToast('Please enter a team name', 'warning');
-                return;
-            }
-            
-            // Generate random color for team emblem
-            const colors = ['#4a90e2', '#9b59b6', '#e74c3c', '#27ae60', '#f39c12', '#1abc9c', '#3498db', '#e67e22'];
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            
-            participants.push({
-                id: Date.now() + Math.random(),
-                name: name,
-                color: randomColor,
-                seed: participants.length + 1, // Add seed number
-                wins: 0,
-                losses: 0,
-                draws: 0,
-                totalKills: 0,
-                totalDuration: 0,
-                points: 0,
-                buchholz: 0,
-                opponents: []
-            });
-            
-            nameInput.value = '';
-            updateParticipantsList();
-            updateInfo();
-            autoSave();
+        function updateInfo() {
+            document.getElementById('totalTeams').textContent = participants.length;
+            document.getElementById('matchCount').textContent = matches.length;
+            document.getElementById('currentSystem').textContent = 
+                document.getElementById('bracketSystem').options[document.getElementById('bracketSystem').selectedIndex].text.split(' ')[0];
         }
         
-        // Add multiple participants via array
-        function addParticipantsFromArray(namesArray) {
-            if (participants.length + namesArray.length > 30) {
-                showToast('Cannot add more than 30 participants total', 'warning');
+        // ============== MULTI INPUT FUNCTIONS ==============
+        
+        // Generate input fields based on team count
+        function generateTeamInputs() {
+            const count = parseInt(document.getElementById('teamCount').value);
+            
+            if (count < 2 || count > 30) {
+                showToast('Number of teams must be between 2 and 30', 'warning');
                 return;
             }
             
-            const colors = ['#4a90e2', '#9b59b6', '#e74c3c', '#27ae60', '#f39c12', '#1abc9c', '#3498db', '#e67e22'];
+            expectedTeamCount = count;
             
-            namesArray.forEach(name => {
-                if (name.trim() !== '') {
-                    participants.push({
-                        id: Date.now() + Math.random() + participants.length,
-                        name: name.trim(),
-                        color: colors[Math.floor(Math.random() * colors.length)],
-                        seed: participants.length + 1,
-                        wins: 0,
-                        losses: 0,
-                        draws: 0,
-                        totalKills: 0,
-                        totalDuration: 0,
-                        points: 0,
-                        buchholz: 0,
-                        opponents: []
-                    });
+            const grid = document.getElementById('participantsInputGrid');
+            grid.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const item = document.createElement('div');
+                item.className = 'participant-input-item';
+                item.innerHTML = `
+                    <div class="input-number">${i}</div>
+                    <input type="text" class="input-field" id="teamInput_${i}" placeholder="Enter team ${i} name" maxlength="30">
+                `;
+                grid.appendChild(item);
+            }
+            
+            document.getElementById('inputCounter').textContent = `0/${count}`;
+            document.getElementById('multiInputSection').style.display = 'block';
+            document.getElementById('participantsSection').style.display = 'none';
+            
+            // Focus on first input
+            document.getElementById('teamInput_1').focus();
+        }
+        
+        // Save all team names from input fields
+        function saveAllTeamNames() {
+            const count = expectedTeamCount;
+            const names = [];
+            let emptyCount = 0;
+            
+            for (let i = 1; i <= count; i++) {
+                const input = document.getElementById(`teamInput_${i}`);
+                const name = input.value.trim();
+                
+                if (name === '') {
+                    emptyCount++;
+                    input.style.borderColor = '#e74c3c';
+                } else {
+                    input.style.borderColor = '#27ae60';
+                    names.push(name);
                 }
+            }
+            
+            if (emptyCount > 0) {
+                showToast(`${emptyCount} team name(s) are empty`, 'warning');
+                return;
+            }
+            
+            // Clear existing participants
+            participants = [];
+            
+            // Colors array for teams
+            const colors = ['#4a90e2', '#9b59b6', '#e74c3c', '#27ae60', '#f39c12', '#1abc9c', '#3498db', '#e67e22', '#2c3e50', '#8e44ad', '#16a085', '#d35400', '#c0392b', '#7f8c8d', '#2980b9'];
+            
+            // Add all teams
+            names.forEach((name, index) => {
+                participants.push({
+                    id: Date.now() + index + Math.random(),
+                    name: name,
+                    color: colors[index % colors.length],
+                    seed: index + 1,
+                    wins: 0,
+                    losses: 0,
+                    draws: 0,
+                    totalKills: 0,
+                    totalDuration: 0,
+                    points: 0,
+                    buchholz: 0,
+                    opponents: []
+                });
             });
+            
+            // Update UI
+            document.getElementById('multiInputSection').style.display = 'none';
+            document.getElementById('participantsSection').style.display = 'block';
             
             updateParticipantsList();
             updateInfo();
             autoSave();
-            showToast(`${namesArray.length} participants added`, 'success');
+            
+            showToast(`${participants.length} teams saved successfully!`, 'success');
+        }
+        
+        // Update participants list UI
+        function updateParticipantsList() {
+            const list = document.getElementById('participantsList');
+            const countSpan = document.getElementById('participantListCount');
+            
+            if (countSpan) {
+                countSpan.textContent = participants.length;
+            }
+            
+            if (participants.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <p>No participants added yet</p>
+                        <small>Set number of teams and enter their names above</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = '';
+            
+            participants.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'participant-card';
+                card.style.borderLeftColor = p.color || '#9b59b6';
+                
+                const matchesPlayed = p.wins + p.losses + p.draws;
+                const winRate = matchesPlayed > 0 ? ((p.wins / matchesPlayed) * 100).toFixed(1) : 0;
+                
+                card.innerHTML = `
+                    <div class="participant-info">
+                        <span class="participant-name">
+                            <span class="seed-number">${p.seed}</span>
+                            <i class="fas fa-shield-alt" style="color: ${p.color || '#9b59b6'}; margin-right: 5px;"></i>
+                            ${p.name}
+                        </span>
+                        <span class="participant-stats">
+                            W: ${p.wins} | L: ${p.losses} | D: ${p.draws} | WR: ${winRate}%
+                        </span>
+                    </div>
+                    <div class="participant-actions">
+                        <i class="fas fa-edit edit-participant" onclick="editParticipant('${p.id}')" title="Edit team"></i>
+                        <i class="fas fa-times remove-participant" onclick="removeParticipant('${p.id}')" title="Remove team"></i>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
         }
         
         // Edit participant
@@ -1419,89 +1505,15 @@
                 }
                 updateInfo();
                 autoSave();
-            }
-        }
-        
-        // Update participants list UI
-        function updateParticipantsList() {
-            const list = document.getElementById('participantsList');
-            const countSpan = document.getElementById('participantListCount');
-            
-            if (countSpan) {
-                countSpan.textContent = participants.length;
-            }
-            
-            if (participants.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-users"></i>
-                        <p>No participants added yet</p>
-                        <small>Use the form above to add teams manually, or click "Add Sample Teams"</small>
-                        <div style="margin-top: 15px;">
-                            <button class="btn btn-secondary" onclick="addSampleTeams()" style="margin: 5px;">
-                                <i class="fas fa-plus-circle"></i> Add Sample Teams (8)
-                            </button>
-                        </div>
-                    </div>
-                `;
-                return;
-            }
-            
-            list.innerHTML = '';
-            
-            participants.forEach(p => {
-                const card = document.createElement('div');
-                card.className = 'participant-card';
-                card.style.borderLeftColor = p.color || '#9b59b6';
                 
-                const matchesPlayed = p.wins + p.losses + p.draws;
-                const winRate = matchesPlayed > 0 ? ((p.wins / matchesPlayed) * 100).toFixed(1) : 0;
-                
-                card.innerHTML = `
-                    <div class="participant-info">
-                        <span class="participant-name">
-                            <span class="seed-number">#${p.seed}</span>
-                            <i class="fas fa-shield-alt" style="color: ${p.color || '#9b59b6'}; margin-right: 5px;"></i>
-                            ${p.name}
-                        </span>
-                        <span class="participant-stats">
-                            W: ${p.wins} | L: ${p.losses} | D: ${p.draws} | WR: ${winRate}%
-                        </span>
-                    </div>
-                    <div class="participant-actions">
-                        <i class="fas fa-edit edit-participant" onclick="editParticipant('${p.id}')" title="Edit team"></i>
-                        <i class="fas fa-times remove-participant" onclick="removeParticipant('${p.id}')" title="Remove team"></i>
-                    </div>
-                `;
-                list.appendChild(card);
-            }));
+                if (participants.length === 0) {
+                    document.getElementById('participantsSection').style.display = 'none';
+                }
+            }
         }
         
-        // Add sample teams
-        function addSampleTeams() {
-            const sampleTeams = [
-                'Team Phoenix', 'Dragon Warriors', 'Thunder Hawks', 'Crimson Tide',
-                'Shadow Wolves', 'Elite Storm', 'Victory Legends', 'Royal Kings',
-                'Golden Eagles', 'Silver Arrows', 'Blue Dolphins', 'Red Panthers',
-                'Black Mambas', 'White Tigers', 'Green Griffins', 'Purple Phoenix'
-            ];
-            
-            // Take first 8 teams or less if near limit
-            const availableSlots = 30 - participants.length;
-            const teamsToAdd = sampleTeams.slice(0, Math.min(8, availableSlots));
-            
-            addParticipantsFromArray(teamsToAdd);
-        }
+        // ============== TOURNAMENT FUNCTIONS ==============
         
-        // Update info display
-        function updateInfo() {
-            document.getElementById('participantCount').textContent = participants.length + '/30';
-            document.getElementById('matchCount').textContent = matches.length;
-            document.getElementById('currentSystem').textContent = 
-                document.getElementById('bracketSystem').options[document.getElementById('bracketSystem').selectedIndex].text.split(' ')[0];
-        }
-        
-        // Initialize tournament based on selected system
         function initializeTournament() {
             if (participants.length < 2) {
                 showToast('Minimum 2 participants required!', 'warning');
@@ -1550,11 +1562,10 @@
             showToast('Tournament initialized successfully!', 'success');
         }
         
-        // Generate Single Elimination bracket with dual direction and minimal BYEs
         function generateSingleElimination() {
             const numParticipants = participants.length;
             
-            // Find the next power of 2 that can accommodate participants with minimal BYEs
+            // Find the next power of 2
             let totalSlots = 2;
             while (totalSlots < numParticipants) {
                 totalSlots *= 2;
@@ -1562,10 +1573,10 @@
             
             const numByes = totalSlots - numParticipants;
             
-            // Sort participants by seed (1 is highest seed)
-            let seededParticipants = [...participants].sort((a, b) => (a.seed || 999) - (b.seed || 999));
+            // Sort by seed
+            let seededParticipants = [...participants].sort((a, b) => a.seed - b.seed);
             
-            // Create bracket with seeding to minimize BYEs in early rounds
+            // Create bracket with standard seeding
             let bracketParticipants = [];
             
             // Standard tournament seeding (1 vs last, 2 vs second last, etc.)
@@ -1586,17 +1597,15 @@
                 if (i < bottomSeeds.length) bracketParticipants.push(bottomSeeds[bottomSeeds.length - 1 - i]);
             }
             
-            // Calculate number of rounds
             const numRounds = Math.ceil(Math.log2(totalSlots));
             
-            // Create first round matches with BYEs placed strategically
+            // Create first round matches
             const firstRoundMatches = [];
             
-            // Distribute BYEs to top seeds (they get auto-advance to second round)
+            // Distribute BYEs to top seeds
             const byePositions = [];
             for (let i = 0; i < numByes; i++) {
-                // Place BYEs at positions that give advantage to top seeds
-                byePositions.push(i * 2);
+                byePositions.push(i);
             }
             
             let participantIndex = 0;
@@ -1605,7 +1614,7 @@
                 let team2 = null;
                 
                 if (byePositions.includes(i)) {
-                    // This match is a BYE - top seed advances automatically
+                    // BYE match - top seed gets auto-win
                     team1 = bracketParticipants[participantIndex++] || { id: 'bye-' + i, name: 'BYE', isBye: true };
                     team2 = { id: 'bye-' + i, name: 'BYE', isBye: true };
                 } else {
@@ -1614,22 +1623,34 @@
                     team2 = bracketParticipants[participantIndex++] || { id: 'bye-' + i, name: 'BYE', isBye: true };
                 }
                 
+                // Auto-complete BYE matches
+                let completed = false;
+                let winner = null;
+                
+                if (team1.isBye && !team2.isBye) {
+                    winner = team2.id;
+                    completed = true;
+                } else if (!team1.isBye && team2.isBye) {
+                    winner = team1.id;
+                    completed = true;
+                }
+                
                 firstRoundMatches.push({
-                    id: 'R1M' + i + '-' + Date.now(),
+                    id: 'R1M' + i + '-' + Date.now() + Math.random(),
                     round: 1,
                     matchNumber: i + 1,
                     team1: team1,
                     team2: team2,
-                    team1Score: null,
-                    team2Score: null,
+                    team1Score: completed ? (winner === team1.id ? 1 : 0) : null,
+                    team2Score: completed ? (winner === team2.id ? 1 : 0) : null,
                     team1Kills: 0,
                     team2Kills: 0,
                     team1Duration: 0,
                     team2Duration: 0,
-                    winner: null,
+                    winner: winner,
                     nextMatchId: 'R2M' + Math.floor(i/2) + '-' + Date.now(),
-                    completed: false,
-                    side: i < totalSlots/4 ? 'left' : 'right' // Split into left and right bracket
+                    completed: completed,
+                    side: i < totalSlots/4 ? 'left' : 'right'
                 });
             }
             
@@ -1641,10 +1662,9 @@
                 const isFinal = (round === numRounds);
                 
                 for (let i = 0; i < matchesInRound; i++) {
-                    const matchId = 'R' + round + 'M' + i + '-' + Date.now();
-                    const nextMatchId = round < numRounds ? 'R' + (round+1) + 'M' + Math.floor(i/2) + '-' + Date.now() : null;
+                    const matchId = 'R' + round + 'M' + i + '-' + Date.now() + Math.random();
+                    const nextMatchId = round < numRounds ? 'R' + (round+1) + 'M' + Math.floor(i/2) + '-' + Date.now() + Math.random() : null;
                     
-                    // Determine side (left, right, or final)
                     let side = 'center';
                     if (!isFinal) {
                         if (i < matchesInRound/2) {
@@ -1676,21 +1696,17 @@
             }
         }
         
-        // Generate Double Elimination bracket (simplified)
         function generateDoubleElimination() {
             generateSingleElimination();
             showToast('Double Elimination mode activated', 'info');
         }
         
-        // Generate Group Stage
         function generateGroupStage() {
             const numGroups = Math.ceil(participants.length / 4);
             const groups = [];
             
-            // Sort by seed and distribute
-            let seeded = [...participants].sort((a, b) => (a.seed || 999) - (b.seed || 999));
+            let seeded = [...participants].sort((a, b) => a.seed - b.seed);
             
-            // Snake draft for groups
             for (let i = 0; i < numGroups; i++) {
                 groups.push({
                     name: String.fromCharCode(65 + i),
@@ -1698,12 +1714,12 @@
                 });
             }
             
+            // Snake draft
             for (let i = 0; i < seeded.length; i++) {
                 const groupIndex = i % numGroups;
                 groups[groupIndex].teams.push(seeded[i]);
             }
             
-            // Generate group matches (round robin)
             groups.forEach(group => {
                 for (let i = 0; i < group.teams.length; i++) {
                     for (let j = i + 1; j < group.teams.length; j++) {
@@ -1729,9 +1745,7 @@
             });
         }
         
-        // Generate Swiss System
         function generateSwissSystem() {
-            // Initial random pairing
             let shuffled = [...participants].sort(() => Math.random() - 0.5);
             
             for (let i = 0; i < shuffled.length; i += 2) {
@@ -1754,7 +1768,6 @@
             }
         }
         
-        // Render bracket based on current system
         function renderBracket() {
             const wrapper = document.getElementById('bracketWrapper');
             
@@ -1778,41 +1791,31 @@
             }
         }
         
-        // Render dual direction bracket (left and right sides meeting at final)
         function renderDualDirectionBracket(wrapper) {
             wrapper.innerHTML = '';
             
             const rounds = [...new Set(matches.map(m => m.round))].sort((a,b) => a-b);
             const finalRound = Math.max(...rounds);
             
-            // Create left bracket container
             const leftBracket = document.createElement('div');
             leftBracket.className = 'bracket-left';
             
-            // Create right bracket container
             const rightBracket = document.createElement('div');
             rightBracket.className = 'bracket-right';
             
-            // Create final round container
             const finalContainer = document.createElement('div');
             finalContainer.className = 'final-round';
             
-            // Distribute matches
             rounds.forEach(round => {
                 if (round === finalRound) {
-                    // Final round - goes in center
                     const roundMatches = matches.filter(m => m.round === round);
                     roundMatches.forEach(match => {
                         finalContainer.appendChild(createMatchElement(match, true));
                     });
                 } else {
-                    // Other rounds - split left and right
                     const roundMatches = matches.filter(m => m.round === round);
-                    
-                    // Split matches between left and right
                     const halfPoint = Math.ceil(roundMatches.length / 2);
                     
-                    // Left side matches (first half)
                     const leftMatches = roundMatches.slice(0, halfPoint);
                     if (leftMatches.length > 0) {
                         const roundDiv = document.createElement('div');
@@ -1830,7 +1833,6 @@
                         leftBracket.appendChild(roundDiv);
                     }
                     
-                    // Right side matches (second half) - reverse order for symmetry
                     const rightMatches = roundMatches.slice(halfPoint).reverse();
                     if (rightMatches.length > 0) {
                         const roundDiv = document.createElement('div');
@@ -1850,13 +1852,11 @@
                 }
             });
             
-            // Assemble the bracket
             wrapper.appendChild(leftBracket);
             wrapper.appendChild(finalContainer);
             wrapper.appendChild(rightBracket);
         }
         
-        // Create match element
         function createMatchElement(match, isFinal = false, side = 'center') {
             const matchDiv = document.createElement('div');
             matchDiv.className = 'match';
@@ -1867,8 +1867,7 @@
                 matchDiv.style.borderColor = '#f1c40f';
             }
             
-            // Add champion class if this is final match with winner
-            if (isFinal && match.completed) {
+            if (isFinal && match.completed && match.winner) {
                 matchDiv.classList.add('champion');
             }
             
@@ -1895,7 +1894,7 @@
                 team1Row.innerHTML = `
                     <span class="team-name">
                         <i class="fas fa-shield-alt" style="color: ${match.team1.color || '#4a90e2'};"></i>
-                        ${match.team1.name.length > 12 ? match.team1.name.substring(0, 10) + '...' : match.team1.name}
+                        ${match.team1.name.length > 15 ? match.team1.name.substring(0, 12) + '...' : match.team1.name}
                     </span>
                     <div class="stats-badge">
                         <input type="number" class="team-score" value="${match.team1Score !== null ? match.team1Score : ''}" placeholder="S" min="0" step="1" onclick="event.stopPropagation()" onchange="updateScore('${match.id}', 'team1', 'score', this.value)" title="Score">
@@ -1918,7 +1917,7 @@
                 team2Row.innerHTML = `
                     <span class="team-name">
                         <i class="fas fa-shield-alt" style="color: ${match.team2.color || '#9b59b6'};"></i>
-                        ${match.team2.name.length > 12 ? match.team2.name.substring(0, 10) + '...' : match.team2.name}
+                        ${match.team2.name.length > 15 ? match.team2.name.substring(0, 12) + '...' : match.team2.name}
                     </span>
                     <div class="stats-badge">
                         <input type="number" class="team-score" value="${match.team2Score !== null ? match.team2Score : ''}" placeholder="S" min="0" step="1" onclick="event.stopPropagation()" onchange="updateScore('${match.id}', 'team2', 'score', this.value)" title="Score">
@@ -1938,7 +1937,6 @@
             return matchDiv;
         }
         
-        // Open modal for score input
         function openScoreModal(matchId, team) {
             if (!tournamentInitialized) return;
             
@@ -1985,13 +1983,11 @@
             modal.style.display = 'flex';
         }
         
-        // Close modal
         function closeModal() {
             document.getElementById('scoreModal').style.display = 'none';
             currentMatchId = null;
         }
         
-        // Save match score from modal
         function saveMatchScore() {
             if (!currentMatchId) return;
             
@@ -2006,7 +2002,6 @@
             const team2Kills = document.getElementById('modalTeam2Kills') ? parseInt(document.getElementById('modalTeam2Kills').value) || 0 : 0;
             const team2Duration = document.getElementById('modalTeam2Duration') ? parseInt(document.getElementById('modalTeam2Duration').value) || 0 : 0;
             
-            // Update match data
             match.team1Score = team1Score;
             match.team2Score = team2Score;
             match.team1Kills = team1Kills;
@@ -2014,7 +2009,6 @@
             match.team1Duration = team1Duration;
             match.team2Duration = team2Duration;
             
-            // Determine winner
             if (team1Score !== null && team2Score !== null) {
                 if (team1Score > team2Score) {
                     match.winner = match.team1.id;
@@ -2023,7 +2017,6 @@
                     match.winner = match.team2.id;
                     updateParticipantStats(match.team2.id, match.team1.id, true, team2Kills, team1Kills, team2Duration, team1Duration);
                 } else {
-                    // Tie - use tie-breaker (kills)
                     if (team1Kills > team2Kills) {
                         match.winner = match.team1.id;
                         updateParticipantStats(match.team1.id, match.team2.id, true, team1Kills, team2Kills, team1Duration, team2Duration);
@@ -2031,7 +2024,6 @@
                         match.winner = match.team2.id;
                         updateParticipantStats(match.team2.id, match.team1.id, true, team2Kills, team1Kills, team2Duration, team1Duration);
                     } else {
-                        // Still tied, use duration (shorter is better)
                         if (team1Duration < team2Duration) {
                             match.winner = match.team1.id;
                             updateParticipantStats(match.team1.id, match.team2.id, true, team1Kills, team2Kills, team1Duration, team2Duration);
@@ -2043,17 +2035,7 @@
                 }
                 match.completed = true;
                 
-                // Handle BYE case - if one team is BYE, the other automatically wins
-                if (match.team1 && match.team1.isBye && match.team2) {
-                    match.winner = match.team2.id;
-                    match.completed = true;
-                } else if (match.team2 && match.team2.isBye && match.team1) {
-                    match.winner = match.team1.id;
-                    match.completed = true;
-                }
-                
-                // Update next match if exists
-                if (match.nextMatchId && match.winner) {
+                if (match.nextMatchId) {
                     updateNextMatch(match.nextMatchId, match.winner);
                 }
             }
@@ -2064,7 +2046,6 @@
             autoSave();
         }
         
-        // Update participant statistics
         function updateParticipantStats(winnerId, loserId, isWin, winnerKills, loserKills, winnerDuration, loserDuration) {
             const winner = participants.find(p => p.id === winnerId);
             const loser = participants.find(p => p.id === loserId);
@@ -2085,7 +2066,6 @@
             }
         }
         
-        // Update score from inline inputs
         function updateScore(matchId, team, type, value) {
             const match = matches.find(m => m.id === matchId);
             if (!match) return;
@@ -2102,9 +2082,7 @@
                 else if (type === 'duration') match.team2Duration = numValue;
             }
             
-            // Auto-determine winner if both scores are entered
             if (match.team1Score !== null && match.team2Score !== null) {
-                
                 if (match.team1Score > match.team2Score) {
                     match.winner = match.team1.id;
                     updateParticipantStats(match.team1.id, match.team2.id, true, match.team1Kills, match.team2Kills, match.team1Duration, match.team2Duration);
@@ -2112,7 +2090,6 @@
                     match.winner = match.team2.id;
                     updateParticipantStats(match.team2.id, match.team1.id, true, match.team2Kills, match.team1Kills, match.team2Duration, match.team1Duration);
                 } else {
-                    // Tie - use tie-breaker
                     if (match.team1Kills > match.team2Kills) {
                         match.winner = match.team1.id;
                         updateParticipantStats(match.team1.id, match.team2.id, true, match.team1Kills, match.team2Kills, match.team1Duration, match.team2Duration);
@@ -2120,7 +2097,6 @@
                         match.winner = match.team2.id;
                         updateParticipantStats(match.team2.id, match.team1.id, true, match.team2Kills, match.team1Kills, match.team2Duration, match.team1Duration);
                     } else {
-                        // Still tied, use duration
                         if (match.team1Duration < match.team2Duration) {
                             match.winner = match.team1.id;
                             updateParticipantStats(match.team1.id, match.team2.id, true, match.team1Kills, match.team2Kills, match.team1Duration, match.team2Duration);
@@ -2142,7 +2118,6 @@
             }
         }
         
-        // Update next match with winner
         function updateNextMatch(nextMatchId, winnerId) {
             const nextMatch = matches.find(m => m.id === nextMatchId);
             if (!nextMatch) return;
@@ -2157,7 +2132,6 @@
             }
         }
         
-        // Render Group Stage
         function renderGroupStage(wrapper) {
             wrapper.innerHTML = '';
             
@@ -2191,7 +2165,6 @@
                     </tbody>
                 `;
                 
-                // Calculate standings
                 const groupMatches = matches.filter(m => m.group === group);
                 const teams = [];
                 
@@ -2218,7 +2191,6 @@
                     }
                 });
                 
-                // Update stats
                 groupMatches.forEach(match => {
                     if (match.completed) {
                         const t1 = teams.find(t => t.id === match.team1.id);
@@ -2248,7 +2220,6 @@
                     }
                 });
                 
-                // Sort by points, then kills
                 teams.sort((a,b) => {
                     if (b.points !== a.points) return b.points - a.points;
                     return b.kills - a.kills;
@@ -2261,9 +2232,7 @@
                         row.classList.add('qualified');
                     }
                     
-                    const medal = index === 0 ? '<span class="medal gold">🥇</span>' : 
-                                 index === 1 ? '<span class="medal silver">🥈</span>' :
-                                 index === 2 ? '<span class="medal bronze">🥉</span>' : '';
+                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
                     
                     row.innerHTML = `
                         <td>${medal} ${team.name}</td>
@@ -2278,7 +2247,6 @@
                 
                 groupCard.appendChild(table);
                 
-                // Add matches in this group
                 groupMatches.forEach(match => {
                     const matchElement = createMatchElement(match);
                     matchElement.style.marginTop = '15px';
@@ -2291,11 +2259,9 @@
             wrapper.appendChild(groupsContainer);
         }
         
-        // Render Swiss System
         function renderSwissSystem(wrapper) {
             wrapper.innerHTML = '';
             
-            // Calculate standings with tie-breakers
             participants.forEach(p => {
                 p.wins = 0;
                 p.losses = 0;
@@ -2339,7 +2305,6 @@
                 }
             });
             
-            // Calculate Buchholz (sum of opponents' scores)
             participants.forEach(p => {
                 p.buchholz = 0;
                 p.opponents.forEach(oppId => {
@@ -2350,7 +2315,6 @@
                 });
             });
             
-            // Create standings table
             const standingsDiv = document.createElement('div');
             standingsDiv.style.marginBottom = '30px';
             
@@ -2367,7 +2331,6 @@
                         <th>D</th>
                         <th>Kills</th>
                         <th>AvgK</th>
-                        <th>Dur</th>
                         <th>Pts</th>
                         <th>Buch</th>
                     </tr>
@@ -2376,7 +2339,6 @@
                 </tbody>
             `;
             
-            // Sort with tie-breakers: Points > Buchholz > Average Kills > Duration
             const sortedParticipants = [...participants].sort((a,b) => {
                 if (b.points !== a.points) return b.points - a.points;
                 if (b.buchholz !== a.buchholz) return b.buchholz - a.buchholz;
@@ -2391,15 +2353,10 @@
             sortedParticipants.forEach((p, index) => {
                 const matchesPlayed = p.wins + p.losses + p.draws;
                 const avgKills = matchesPlayed > 0 ? (p.totalKills / matchesPlayed).toFixed(1) : 0;
-                const avgDuration = matchesPlayed > 0 ? (p.totalDuration / matchesPlayed).toFixed(0) : 0;
-                
-                const row = document.createElement('tr');
-                if (index < 3) {
-                    row.classList.add('top-three');
-                }
                 
                 const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
                 
+                const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><strong>#${index + 1} ${medal}</strong></td>
                     <td><i class="fas fa-shield-alt" style="color: ${p.color || '#9b59b6'};"></i> ${p.name}</td>
@@ -2409,7 +2366,6 @@
                     <td>${p.draws}</td>
                     <td>${p.totalKills}</td>
                     <td>${avgKills}</td>
-                    <td>${avgDuration}s</td>
                     <td><strong>${p.points}</strong></td>
                     <td>${p.buchholz}</td>
                 `;
@@ -2419,7 +2375,6 @@
             standingsDiv.appendChild(table);
             wrapper.appendChild(standingsDiv);
             
-            // Add current round matches
             const matchesDiv = document.createElement('div');
             matchesDiv.innerHTML = '<h3 style="color: #9b59b6; margin-bottom: 15px; font-size: 1.1em;"><i class="fas fa-fist-raised"></i> Current Round</h3>';
             
@@ -2435,12 +2390,10 @@
             wrapper.appendChild(matchesDiv);
         }
         
-        // Export to Excel
         function exportToExcel() {
             const tournamentName = document.getElementById('tournamentName').value || 'Tournament';
             const wb = XLSX.utils.book_new();
             
-            // Create standings sheet
             const standingsData = [['Rank', 'Team', 'Seed', 'Matches', 'Wins', 'Losses', 'Draws', 'Total Kills', 'Avg Kills', 'Points', 'Buchholz']];
             
             participants.forEach((p, index) => {
@@ -2464,7 +2417,6 @@
             const wsStandings = XLSX.utils.aoa_to_sheet(standingsData);
             XLSX.utils.book_append_sheet(wb, wsStandings, 'Standings');
             
-            // Create matches sheet
             const matchesData = [['Match ID', 'Round/Group', 'Team 1', 'Score 1', 'Kills 1', 'Team 2', 'Score 2', 'Kills 2', 'Winner', 'Duration 1', 'Duration 2']];
             
             matches.forEach(m => {
@@ -2488,12 +2440,10 @@
             const wsMatches = XLSX.utils.aoa_to_sheet(matchesData);
             XLSX.utils.book_append_sheet(wb, wsMatches, 'Matches');
             
-            // Export
             XLSX.writeFile(wb, `${tournamentName}_Results.xlsx`);
             showToast('Excel file exported', 'success');
         }
         
-        // Export to PDF
         function exportToPDF() {
             const tournamentName = document.getElementById('tournamentName').value || 'Tournament';
             
@@ -2512,12 +2462,9 @@
             });
         }
         
-        // Print bracket
         function printBracket() {
             window.print();
         }
-        
-        // ============== DATA MANAGEMENT WRAPPER FUNCTIONS ==============
         
         function saveData() {
             saveToLocalStorage();
@@ -2526,30 +2473,26 @@
         function loadData() {
             loadFromLocalStorage();
         }
-               function clearData() {
+        
+        function clearData() {
             clearLocalStorage();
         }
         
         // ============== INITIALIZATION ==============
         
-        // Load saved data on page load
         window.onload = function() {
-            // Try to load from localStorage
             const hasData = loadFromLocalStorage();
             
-            // If no saved data, show empty state
             if (!hasData) {
                 updateParticipantsList();
                 renderBracket();
                 updateInfo();
             }
             
-            // Set up auto-save for beforeunload
             window.addEventListener('beforeunload', function() {
                 autoSave();
             });
             
-            // Periodic auto-save every 30 seconds
             setInterval(autoSave, 30000);
         };
     </script>
